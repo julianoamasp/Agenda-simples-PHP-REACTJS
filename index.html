@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+    }
+
+    body {
+        position: absolute;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+
+
+    .todos-titulo {
+        padding: 10px;
+        background-color: #9e9e9e;
+        font-size: 15vw;
+        font-weight: bold;
+        text-align: center;
+        color: #ffff;
+    }
+
+    .todos-adicionar {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .todos-adicionar {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 20vw;
+        border-radius: 100%;
+        padding: 0px 20px;
+    }
+
+    .todos-tabela table {
+    padding: 20px;
+}
+
+    .todos-tabela td {
+        padding: 5px;
+        font-size: 25px;
+    }
+
+    .todos-tabela tr {
+        border-bottom: 1px solid black;
+    }
+
+    .todos-tabela td button {
+        font-size: 20px;
+        background-color: #f0f8ff00;
+        border: none;
+    }
+    .acao-formulario {
+    padding: 20px;
+}
+.acao-formulario input {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0px;
+}
+.acao-formulario button {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0px;
+}
+.acao-formulario p {
+    font-size: 24px;
+    text-align: center;
+    margin: 10px 0px;
+}
+
+loading{
+    
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #6565656e;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+loading .card{
+    
+    padding: 20px;
+    background-color: #ffffff;
+    font-size: 10vw;
+
+}
+</style>
+
+<body>
+
+    <div id="app" style="
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: auto;
+">
+
+
+
+
+    </div>
+
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        class Exibir extends React.Component {
+            constructor(props) {
+                super(props);
+            }
+            render() {
+                let text = [];
+                if (this.props.contatos.length > 0) {
+                    for (let x = 0; x < this.props.contatos.length; x++) {
+                        text.push(<tr>
+                            <td onClick={this.props.mudarPagina.bind(event, "detalhes", this.props.contatos[x].id)}>{this.props.contatos[x].nome}</td>
+                            <td><button onClick={this.props.mudarPagina.bind(event, "detalhes", this.props.contatos[x].id)}><i class="fa fa-edit"></i></button></td>
+                        </tr>);
+                    }
+                } else {
+                    text.push("Sem registros");
+                }
+                return (
+                    <div class="todos">
+                        <button class="todos-adicionar" onClick={this.props.mudarPagina.bind(event, "adicionar")}>+</button>
+                        <div class="todos-titulo">Contatos</div>
+                        <div class="todos-tabela">
+                            <table width="100%">
+                                {text}
+                            </table>
+                        </div>
+                    </div>
+                )
+            }
+        }
+        class Acao extends React.Component {
+            constructor(props) {
+                super(props);
+            }
+            render() {
+                const view = [];
+                if (this.props.acao == "detalhes") {
+                    view.push(<div class="acao">
+                        <div class="todos-titulo">Contato</div>
+                        
+                        <div class="acao-formulario">
+                            <p>Vizualize ou edite seu contato</p>
+                            <div>
+                                <input type="hidden" id="editInputId" placeholder="Nome" value={this.props.contato.id} />
+                                <input type="text" id="editInputNome" onChange={this.props.mudarAtributoEdicao.bind(event, "nome")} value={this.props.contato.nome} />
+                            </div>
+                            <div>
+                                <input type="text" id="editInputTelefone" onChange={this.props.mudarAtributoEdicao.bind(event, "nome")} value={this.props.contato.telefone} />
+                            </div>
+                            <div>
+                                <input type="text" id="editInputEndereco" onChange={this.props.mudarAtributoEdicao.bind(event, "nome")} value={this.props.contato.endereco} />
+                            </div>
+                            <div>
+                                <input type="text" id="editInputEmail" onChange={this.props.mudarAtributoEdicao.bind(event, "nome")} value={this.props.contato.email} />
+                            </div>
+                            <div>
+                                <button onClick={this.props.salvarEdicao.bind(event, this.props.contato.id)}>Salvar</button>
+                            </div>
+                            <div>
+                                <button onClick={this.props.remover.bind(event, this.props.contato.id)}>remover</button>
+                            </div>
+                            <div>
+                                <button onClick={this.props.mudarPagina.bind(event, "exibir")}>Voltar</button>
+                            </div>
+                        </div>
+                    </div>);
+                } else {
+                    view.push(<div class="acao">
+                        <div class="todos-titulo">Contato</div>
+                        
+                        <div class="acao-formulario">
+                            <p>Adicione um novo contato</p>
+                            <div>
+                                <input type="text" id="inputAdicionarNome" placeholder="Nome" />
+                            </div>
+                            <div>
+                                <input type="text" id="inputAdicionarTelefone" placeholder="Telefone" />
+                            </div>
+                            <div>
+                                <input type="text" id="inputAdicionarEndereco" placeholder="Endereço" />
+                            </div>
+                            <div>
+                                <input type="text" id="inputAdicionarEmail" placeholder="Email" />
+                            </div>
+                            <div>
+                                <button onClick={this.props.adicionarNovo.bind()}>Salvar</button>
+                            </div>
+                            <div>
+                                <button onClick={this.props.mudarPagina.bind(event, "exibir")}>Voltar</button>
+                            </div>
+                        </div>
+                    </div>);
+                }
+                return (
+                    view
+                )
+            }
+        }
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    acao: "exibir",
+                    loading: false,
+                    contato: { id: 1, nome: "edita nome", telefone: "edita tel", endereco: "edita end", email: "edita email" },
+                    contatos: []
+                };
+                this.mudarPagina = this.mudarPagina.bind(this);
+                this.mudarAtributoEdicao = this.mudarAtributoEdicao.bind(this);
+                this.remover = this.remover.bind(this);
+                this.salvarEdicao = this.salvarEdicao.bind(this);
+                this.adicionarNovo = this.adicionarNovo.bind(this);
+            }
+            componentDidMount() {
+                this.atualizarContatosLista();
+  }
+            mudarPagina(pagina, id) {
+                let arr = this.state.contatos;
+                this.setState({ acao: pagina });
+                switch (pagina) {
+                    case "exibir":
+                    this.atualizarContatosLista();
+                    break;
+                    case "detalhes":
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i].id == id) {
+                                this.setState({ contato: arr[i] });
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+            adicionarNovo(){
+                var r = confirm("Deseja adicionar o contato?");
+                if (r == true) {
+                    this.setState({ loading: true });
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                "nome": document.querySelector("#inputAdicionarNome").value,
+                "telefone": document.querySelector("#inputAdicionarTelefone").value,
+                "endereco": document.querySelector("#inputAdicionarEndereco").value,
+                "email": document.querySelector("#inputAdicionarEmail").value
+                });
+
+                var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+                };
+
+                fetch("https://localhost/api/api/contatos", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    let json = JSON.parse(result);
+                    if(json.cod == 200){
+                        this.mudarPagina("exibir");
+                        alert("Adicionado");
+                    }else{
+                        alert("Erro ao adicionar");
+                    }
+                    this.setState({ loading: false });
+                })
+                .catch(error => console.log('error', error));
+            }
+            }
+            atualizarContatosLista() {
+                
+                var requestOptions = {
+                    method: 'GET',
+                    redirect: 'follow'
+                };
+
+                fetch("https://localhost/api/api/contatos", requestOptions)
+                    .then(response => response.text())
+                    .then(result => {
+                        this.setState({contatos:JSON.parse(result)})
+                    })
+                    .catch(error => console.log('error', error));
+            }
+            salvarEdicao(evento, atributo) {
+                var r = confirm("Deseja salvar a atualização?");
+                if (r == true) {
+                    this.setState({ loading: true });
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                "identificador": document.querySelector("#editInputId").value,
+                "nome": document.querySelector("#editInputNome").value,
+                "telefone": document.querySelector("#editInputTelefone").value,
+                "endereco": document.querySelector("#editInputEndereco").value,
+                "email": document.querySelector("#editInputEmail").value
+                });
+
+                var requestOptions = {
+                method: 'PUT',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+                };
+
+                fetch("https://localhost/api/api/contatos", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    let json = JSON.parse(result);
+                    if(json.cod == 200){
+                        this.mudarPagina("exibir");
+                        alert("Atualizado");
+                    }else{
+                        alert("Erro ao alterar");
+                    }
+                    this.setState({ loading: false });
+                })
+                .catch(error => console.log('error', error));
+            }
+            }
+            mudarAtributoEdicao(atributo, evento) {
+                this.setState({ contato: { atributo: evento.nativeEvent.data } });
+            }
+            remover(evento, atributo) {
+                var r = confirm("Deseja remover este contato?");
+                if (r == true) {
+                    this.setState({ loading: true });
+                let arr = this.state.contatos;
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                "id": evento
+                });
+
+                var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+                };
+
+                fetch("https://localhost/api/api/contatos", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    let json = JSON.parse(result);
+                    if(json.cod == 200){
+                        this.mudarPagina("exibir");
+                        alert("Removido");
+                    }else{
+                        alert("Erro ao remover");
+                    }
+                    this.setState({ loading: false });
+                })
+                .catch(error => console.log('error', error));
+            }
+            }
+            render() {
+                let view = [];
+                if (this.state.loading == true){
+                    view.push(<loading><div class="card">Carregando</div></loading>);
+                }
+                if (this.state.acao == "exibir") {
+                    view.push(<Exibir
+                        mudarPagina={this.mudarPagina}
+                        contatos={this.state.contatos}
+                    />);
+                } else if (this.state.acao == "adicionar") {
+                    view.push(<Acao
+                        mudarPagina={this.mudarPagina}
+                        adicionarNovo={this.adicionarNovo}
+                    />);
+                } else if (this.state.acao == "detalhes") {
+                    view.push(<Acao
+                        acao={this.state.acao}
+                        mudarPagina={this.mudarPagina}
+                        contato={this.state.contato}
+                        mudarAtributoEdicao={this.mudarAtributoEdicao}
+                        remover={this.remover}
+                        salvarEdicao={this.salvarEdicao}
+                    />);
+                }
+
+                return (
+                    <div>
+                        {view}
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('app')
+        );
+    </script>
+</body>
+
+</html>
