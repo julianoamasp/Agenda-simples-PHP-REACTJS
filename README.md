@@ -3,10 +3,8 @@
 <p>Agenda simples com php, mysql e reactjs.</p>
 
 
-<video width="320" height="240" controls>
+<video width="320" height="240" autoplay muted>
   <source src="2021-07-29 21-40-06.mp4" type="video/mp4">
-  <source src="2021-07-29 21-40-06.mp4" type="video/ogg">
-Your browser does not support the video tag.
 </video>
 <p>Tela principal.</p>
 <img src="/Sem título.png">
